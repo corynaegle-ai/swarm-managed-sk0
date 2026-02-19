@@ -1,0 +1,314 @@
+/* Score Display Styles */
+
+/* Scoreboard Container */
+#scoreboard-container {
+    margin: 20px 0;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* No Players Message */
+.no-players {
+    text-align: center;
+    color: #6c757d;
+    font-style: italic;
+    padding: 40px;
+    background: white;
+    border-radius: 4px;
+    border: 2px dashed #dee2e6;
+}
+
+/* Scoreboard Table */
+.scoreboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.scoreboard-table th {
+    background: #343a40;
+    color: white;
+    padding: 15px 12px;
+    text-align: left;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+.scoreboard-table td {
+    padding: 12px;
+    border-bottom: 1px solid #dee2e6;
+    vertical-align: middle;
+}
+
+.scoreboard-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.scoreboard-table tbody tr:hover {
+    background: #f8f9fa;
+}
+
+/* Player Name Cell */
+.player-name {
+    font-weight: 600;
+    color: #343a40;
+    font-size: 1.05rem;
+}
+
+/* Total Score Cell */
+.total-score {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #28a745;
+    text-align: center;
+}
+
+/* Details Button */
+.details-btn {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: background-color 0.2s ease;
+}
+
+.details-btn:hover {
+    background: #0056b3;
+}
+
+.details-btn:focus {
+    outline: 2px solid #80bdff;
+    outline-offset: 2px;
+}
+
+/* Leader Highlighting */
+.leader-highlight {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%) !important;
+    border-left: 4px solid #f39c12 !important;
+    position: relative;
+}
+
+.leader-highlight::before {
+    content: "👑";
+    position: absolute;
+    left: -2px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.2rem;
+    z-index: 1;
+}
+
+.leader-highlight .player-name {
+    color: #b8860b;
+    font-weight: 700;
+}
+
+.leader-highlight .total-score {
+    color: #b8860b;
+    font-weight: 800;
+}
+
+/* Player Details Row */
+.player-details {
+    background: #f1f3f4;
+}
+
+.details-content {
+    padding: 15px 20px;
+    border-left: 3px solid #007bff;
+    background: white;
+    margin: 10px;
+    border-radius: 4px;
+}
+
+.details-content h4 {
+    margin: 0 0 10px 0;
+    color: #343a40;
+    font-size: 1rem;
+}
+
+.rounds-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 8px;
+}
+
+.rounds-list li {
+    background: #e9ecef;
+    padding: 8px 12px;
+    border-radius: 4px;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #495057;
+    border: 1px solid #ced4da;
+}
+
+/* Round Progress Container */
+#round-progress-container {
+    margin: 20px 0;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.round-progress-header {
+    margin: 0 0 20px 0;
+    color: #343a40;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+/* Progress Bar */
+.progress-bar-container {
+    margin: 20px 0;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 12px;
+    background: #e9ecef;
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #28a745, #20c997);
+    transition: width 0.3s ease;
+    position: relative;
+}
+
+.progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* Round Indicators */
+.round-indicators {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.round-indicator {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+}
+
+.round-indicator.completed {
+    background: #28a745;
+    color: white;
+    box-shadow: 0 2px 4px rgba(40, 167, 69, 0.3);
+}
+
+.round-indicator.current {
+    background: #007bff;
+    color: white;
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.4);
+    transform: scale(1.1);
+    animation: pulse 1.5s infinite;
+}
+
+.round-indicator.upcoming {
+    background: #e9ecef;
+    color: #6c757d;
+    border: 2px solid #ced4da;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1.1); }
+    50% { transform: scale(1.2); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .scoreboard-table {
+        font-size: 0.9rem;
+    }
+    
+    .scoreboard-table th,
+    .scoreboard-table td {
+        padding: 8px 6px;
+    }
+    
+    .round-indicators {
+        gap: 4px;
+    }
+    
+    .round-indicator {
+        width: 28px;
+        height: 28px;
+        font-size: 0.8rem;
+    }
+    
+    .rounds-list {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 4px;
+    }
+    
+    .details-content {
+        margin: 5px;
+        padding: 10px 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    #scoreboard-container,
+    #round-progress-container {
+        margin: 10px 0;
+        padding: 15px;
+    }
+    
+    .scoreboard-table {
+        font-size: 0.85rem;
+    }
+    
+    .round-progress-header {
+        font-size: 1.2rem;
+    }
+    
+    .rounds-list {
+        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    }
+    
+    .rounds-list li {
+        padding: 6px 8px;
+        font-size: 0.8rem;
+    }
+}
