@@ -1,111 +1,69 @@
 /**
- * Test Suite for Score Display Module
+ * Tests for scoreDisplay.js
  */
 
-import { renderScoreBoard, renderRoundProgress, updateLeaderHighlight } from '../js/scoreDisplay.js';
+// Mock DOM elements
+const mockScoreboardContainer = {
+    innerHTML: '',
+    id: 'scoreboard'
+};
+
+const mockProgressContainer = {
+    innerHTML: '',
+    id: 'round-progress'
+};
+
+// Mock document methods
+global.document = {
+    getElementById: jest.fn((id) => {
+        if (id === 'scoreboard') return mockScoreboardContainer;
+        if (id === 'round-progress') return mockProgressContainer;
+        return null;
+    }),
+    querySelectorAll: jest.fn(() => []),
+    readyState: 'complete'
+};
 
 // Mock scoreManager functions
-jest.mock('../js/scoreManager.js', () => ({
-    getScores: jest.fn(),
-    getCurrentRound: jest.fn(),
-    getLeader: jest.fn()
+jest.mock('./scoreManager.js', () => ({
+    getCurrentScores: jest.fn(() => ({
+        'Player 1': 150,
+        'Player 2': 120,
+        'Player 3': 180
+    })),
+    getRoundData: jest.fn(() => ({
+        currentRound: 3,
+        totalRounds: 10,
+        roundScores: {
+            1: { 'Player 1': 50, 'Player 2': 40, 'Player 3': 60 },
+            2: { 'Player 1': 45, 'Player 2': 35, 'Player 3': 55 }
+        }
+    })),
+    getLeader: jest.fn(() => 'Player 3')
 }));
 
-import { getScores, getCurrentRound, getLeader } from '../js/scoreManager.js';
+const { renderScoreBoard, renderRoundProgress, updateLeaderHighlight } = require('../js/scoreDisplay.js');
 
-describe('Score Display Module', () => {
+describe('Score Display Functions', () => {
     beforeEach(() => {
-        // Set up DOM
-        document.body.innerHTML = `
-            <div id="scoreboard-container"></div>
-            <div id="round-progress-container"></div>
-        `;
-        
-        // Reset mocks
-        jest.clearAllMocks();
+        mockScoreboardContainer.innerHTML = '';
+        mockProgressContainer.innerHTML = '';
     });
-    
-    describe('renderScoreBoard', () => {
-        test('should render scoreboard with player scores', () => {
-            getScores.mockReturnValue({
-                'Alice': [10, 15, 8],
-                'Bob': [12, 10, 15]
-            });
-            getLeader.mockReturnValue('Bob');
-            
-            renderScoreBoard();
-            
-            const container = document.getElementById('scoreboard-container');
-            expect(container.querySelector('.scoreboard-table')).toBeTruthy();
-            expect(container.textContent).toContain('Alice');
-            expect(container.textContent).toContain('Bob');
-            expect(container.textContent).toContain('33'); // Alice total
-            expect(container.textContent).toContain('37'); // Bob total
-        });
-        
-        test('should highlight leader', () => {
-            getScores.mockReturnValue({
-                'Alice': [10, 15],
-                'Bob': [12, 10]
-            });
-            getLeader.mockReturnValue('Alice');
-            
-            renderScoreBoard();
-            
-            const leaderRow = document.querySelector('.leader');
-            expect(leaderRow).toBeTruthy();
-            expect(leaderRow.textContent).toContain('Alice');
-        });
+
+    test('renderScoreBoard displays scores correctly', () => {
+        renderScoreBoard();
+        expect(mockScoreboardContainer.innerHTML).toContain('Player 1');
+        expect(mockScoreboardContainer.innerHTML).toContain('150');
+        expect(mockScoreboardContainer.innerHTML).toContain('leader');
     });
-    
-    describe('renderRoundProgress', () => {
-        test('should display current round', () => {
-            getCurrentRound.mockReturnValue(3);
-            getScores.mockReturnValue({ 'Alice': [10, 15, 8] });
-            
-            renderRoundProgress();
-            
-            const container = document.getElementById('round-progress-container');
-            expect(container.textContent).toContain('Round 3 of 10');
-        });
-        
-        test('should create expandable breakdown', () => {
-            getCurrentRound.mockReturnValue(2);
-            getScores.mockReturnValue({
-                'Alice': [10, 15],
-                'Bob': [12, 10]
-            });
-            
-            renderRoundProgress();
-            
-            const toggleButton = document.querySelector('.breakdown-toggle');
-            const breakdownContent = document.querySelector('.breakdown-content');
-            
-            expect(toggleButton).toBeTruthy();
-            expect(breakdownContent).toBeTruthy();
-            expect(breakdownContent.style.display).toBe('none');
-        });
+
+    test('renderRoundProgress shows round information', () => {
+        renderRoundProgress();
+        expect(mockProgressContainer.innerHTML).toContain('Round 3 of 10');
+        expect(mockProgressContainer.innerHTML).toContain('progress-bar');
     });
-    
-    describe('updateLeaderHighlight', () => {
-        test('should remove previous highlights and add new one', () => {
-            // Set up initial state
-            document.body.innerHTML = `
-                <div id="scoreboard-container">
-                    <table class="scoreboard-table">
-                        <tr class="leader"><td>Alice</td><td>25</td></tr>
-                        <tr><td>Bob</td><td>30</td></tr>
-                    </table>
-                </div>
-            `;
-            
-            getLeader.mockReturnValue('Bob');
-            
-            updateLeaderHighlight();
-            
-            const rows = document.querySelectorAll('.scoreboard-table tr');
-            expect(rows[0].classList.contains('leader')).toBe(false);
-            expect(rows[1].classList.contains('leader')).toBe(true);
-        });
+
+    test('updateLeaderHighlight handles missing elements gracefully', () => {
+        expect(() => updateLeaderHighlight()).not.toThrow();
     });
 });

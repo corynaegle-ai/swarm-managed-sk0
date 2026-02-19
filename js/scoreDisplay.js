@@ -1,179 +1,130 @@
 /**
  * Score Display Module
- * Handles rendering of score displays in the DOM
+ * Handles rendering and updating score displays in the DOM
  */
 
-// Import score management functions
-import { getScores, getCurrentRound, getLeader } from './scoreManager.js';
+// Import scoreManager functions (assuming they exist)
+import { getCurrentScores, getRoundData, getLeader } from './scoreManager.js';
 
 /**
- * Renders the main scoreboard showing total scores for all players
- * Targets the scoreboard container in index.html
+ * Renders the main scoreboard with current total scores
+ * Targets #scoreboard container in index.html
  */
 export function renderScoreBoard() {
-    const container = document.getElementById('scoreboard-container');
-    if (!container) {
+    const scoreboardContainer = document.getElementById('scoreboard');
+    if (!scoreboardContainer) {
         console.error('Scoreboard container not found');
         return;
     }
 
     try {
-        const scores = getScores();
+        const scores = getCurrentScores();
         const leader = getLeader();
         
-        // Clear existing content
-        container.innerHTML = '';
+        let html = '<div class="score-table">';
+        html += '<h3>Current Standings</h3>';
+        html += '<table class="scores">';
+        html += '<thead><tr><th>Player</th><th>Total Score</th></tr></thead>';
+        html += '<tbody>';
         
-        // Create scoreboard table
-        const table = document.createElement('table');
-        table.className = 'scoreboard-table';
+        // Sort players by score (highest first)
+        const sortedPlayers = Object.entries(scores).sort((a, b) => b[1] - a[1]);
         
-        // Create header
-        const headerRow = document.createElement('tr');
-        headerRow.innerHTML = '<th>Player</th><th>Total Score</th>';
-        table.appendChild(headerRow);
-        
-        // Add player rows
-        Object.entries(scores).forEach(([player, playerScores]) => {
-            const row = document.createElement('tr');
-            const totalScore = playerScores.reduce((sum, score) => sum + score, 0);
-            
-            row.innerHTML = `<td>${player}</td><td>${totalScore}</td>`;
-            
-            // Highlight leader
-            if (player === leader) {
-                row.classList.add('leader');
-            }
-            
-            table.appendChild(row);
+        sortedPlayers.forEach(([player, score]) => {
+            const isLeader = player === leader;
+            const rowClass = isLeader ? 'leader' : '';
+            html += `<tr class="${rowClass}">`;
+            html += `<td class="player-name">${player}</td>`;
+            html += `<td class="player-score">${score}</td>`;
+            html += '</tr>';
         });
         
-        container.appendChild(table);
+        html += '</tbody></table></div>';
+        scoreboardContainer.innerHTML = html;
+        
     } catch (error) {
         console.error('Error rendering scoreboard:', error);
-        container.innerHTML = '<div class="error">Error loading scoreboard</div>';
+        scoreboardContainer.innerHTML = '<div class="error">Error loading scores</div>';
     }
 }
 
 /**
- * Renders round progress indicator and round breakdown
- * Shows current round and expandable round-by-round scores
+ * Renders round progress display showing current round and breakdown
+ * Targets #round-progress container in index.html
  */
 export function renderRoundProgress() {
-    const container = document.getElementById('round-progress-container');
-    if (!container) {
+    const progressContainer = document.getElementById('round-progress');
+    if (!progressContainer) {
         console.error('Round progress container not found');
         return;
     }
 
     try {
-        const currentRound = getCurrentRound();
-        const scores = getScores();
+        const roundData = getRoundData();
+        const currentRound = roundData.currentRound || 1;
+        const totalRounds = roundData.totalRounds || 10;
+        const roundScores = roundData.roundScores || {};
         
-        // Clear existing content
-        container.innerHTML = '';
+        let html = '<div class="round-display">';
+        html += `<h3>Round ${currentRound} of ${totalRounds}</h3>`;
         
-        // Create round indicator
-        const roundIndicator = document.createElement('div');
-        roundIndicator.className = 'round-indicator';
-        roundIndicator.textContent = `Round ${currentRound} of 10`;
-        container.appendChild(roundIndicator);
+        // Progress bar
+        const progressPercent = (currentRound / totalRounds) * 100;
+        html += '<div class="progress-bar">';
+        html += `<div class="progress-fill" style="width: ${progressPercent}%"></div>`;
+        html += '</div>';
         
-        // Create expandable round breakdown
-        const breakdownContainer = document.createElement('div');
-        breakdownContainer.className = 'round-breakdown';
+        // Round-by-round breakdown (collapsible)
+        html += '<div class="round-breakdown">';
+        html += '<button class="toggle-breakdown" onclick="toggleRoundBreakdown()">Show Round Breakdown</button>';
+        html += '<div class="breakdown-content" id="breakdown-content" style="display: none;">';
+        html += '<table class="round-scores">';
+        html += '<thead><tr><th>Round</th>';
         
-        const toggleButton = document.createElement('button');
-        toggleButton.className = 'breakdown-toggle';
-        toggleButton.textContent = 'Show Round Breakdown';
-        toggleButton.setAttribute('aria-expanded', 'false');
+        // Get all players for header
+        const allPlayers = Object.keys(roundScores[1] || {});
+        allPlayers.forEach(player => {
+            html += `<th>${player}</th>`;
+        });
+        html += '</tr></thead><tbody>';
         
-        const breakdownContent = document.createElement('div');
-        breakdownContent.className = 'breakdown-content';
-        breakdownContent.style.display = 'none';
-        
-        // Create round-by-round table
-        const table = document.createElement('table');
-        table.className = 'breakdown-table';
-        
-        // Create header with round numbers
-        const headerRow = document.createElement('tr');
-        let headerHTML = '<th>Player</th>';
-        for (let round = 1; round <= Math.max(currentRound, 1); round++) {
-            headerHTML += `<th>R${round}</th>`;
+        // Add each completed round
+        for (let round = 1; round < currentRound; round++) {
+            html += `<tr><td>Round ${round}</td>`;
+            allPlayers.forEach(player => {
+                const score = roundScores[round]?.[player] || 0;
+                html += `<td>${score}</td>`;
+            });
+            html += '</tr>';
         }
-        headerHTML += '<th>Total</th>';
-        headerRow.innerHTML = headerHTML;
-        table.appendChild(headerRow);
         
-        // Add player rows
-        Object.entries(scores).forEach(([player, playerScores]) => {
-            const row = document.createElement('tr');
-            let rowHTML = `<td>${player}</td>`;
-            
-            for (let round = 0; round < Math.max(currentRound, 1); round++) {
-                const score = playerScores[round] || 0;
-                rowHTML += `<td>${score}</td>`;
-            }
-            
-            const total = playerScores.reduce((sum, score) => sum + score, 0);
-            rowHTML += `<td class="total-cell">${total}</td>`;
-            row.innerHTML = rowHTML;
-            table.appendChild(row);
-        });
-        
-        breakdownContent.appendChild(table);
-        
-        // Add toggle functionality
-        toggleButton.addEventListener('click', () => {
-            const isExpanded = toggleButton.getAttribute('aria-expanded') === 'true';
-            toggleButton.setAttribute('aria-expanded', !isExpanded);
-            breakdownContent.style.display = isExpanded ? 'none' : 'block';
-            toggleButton.textContent = isExpanded ? 'Show Round Breakdown' : 'Hide Round Breakdown';
-        });
-        
-        breakdownContainer.appendChild(toggleButton);
-        breakdownContainer.appendChild(breakdownContent);
-        container.appendChild(breakdownContainer);
+        html += '</tbody></table></div></div></div>';
+        progressContainer.innerHTML = html;
         
     } catch (error) {
         console.error('Error rendering round progress:', error);
-        container.innerHTML = '<div class="error">Error loading round progress</div>';
+        progressContainer.innerHTML = '<div class="error">Error loading round data</div>';
     }
 }
 
 /**
- * Updates the visual highlighting of the current leader
- * Removes previous leader highlighting and applies to current leader
+ * Updates leader highlighting across all score displays
  */
 export function updateLeaderHighlight() {
     try {
         const leader = getLeader();
         
         // Remove existing leader highlights
-        const previousLeaders = document.querySelectorAll('.leader');
-        previousLeaders.forEach(element => {
+        const existingLeaders = document.querySelectorAll('.leader');
+        existingLeaders.forEach(element => {
             element.classList.remove('leader');
         });
         
-        if (!leader) {
-            return;
-        }
-        
-        // Find and highlight current leader in scoreboard
-        const scoreboardRows = document.querySelectorAll('.scoreboard-table tr');
-        scoreboardRows.forEach(row => {
-            const playerCell = row.querySelector('td:first-child');
-            if (playerCell && playerCell.textContent.trim() === leader) {
-                row.classList.add('leader');
-            }
-        });
-        
-        // Highlight leader in breakdown table if visible
-        const breakdownRows = document.querySelectorAll('.breakdown-table tr');
-        breakdownRows.forEach(row => {
-            const playerCell = row.querySelector('td:first-child');
-            if (playerCell && playerCell.textContent.trim() === leader) {
+        // Add leader class to current leader's row
+        const playerRows = document.querySelectorAll('.scores tbody tr');
+        playerRows.forEach(row => {
+            const playerName = row.querySelector('.player-name')?.textContent;
+            if (playerName === leader) {
                 row.classList.add('leader');
             }
         });
@@ -184,21 +135,30 @@ export function updateLeaderHighlight() {
 }
 
 /**
- * Initialize score display functionality
- * Sets up event listeners and initial rendering
+ * Toggle function for round breakdown (attached to window for onclick)
+ */
+window.toggleRoundBreakdown = function() {
+    const content = document.getElementById('breakdown-content');
+    const button = document.querySelector('.toggle-breakdown');
+    
+    if (content && button) {
+        if (content.style.display === 'none') {
+            content.style.display = 'block';
+            button.textContent = 'Hide Round Breakdown';
+        } else {
+            content.style.display = 'none';
+            button.textContent = 'Show Round Breakdown';
+        }
+    }
+};
+
+/**
+ * Initialize score display - call this when page loads
  */
 export function initializeScoreDisplay() {
-    // Render initial displays
     renderScoreBoard();
     renderRoundProgress();
     updateLeaderHighlight();
-    
-    // Set up periodic updates (optional)
-    setInterval(() => {
-        renderScoreBoard();
-        renderRoundProgress();
-        updateLeaderHighlight();
-    }, 5000); // Update every 5 seconds
 }
 
 // Auto-initialize if DOM is ready

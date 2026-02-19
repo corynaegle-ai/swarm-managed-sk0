@@ -1,288 +1,217 @@
 /* Score Display Styles */
 
-/* Scoreboard Container */
-#scoreboard-container {
+/* Main containers */
+#scoreboard, #round-progress {
     margin: 20px 0;
     padding: 20px;
     background: #f8f9fa;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-/* Scoreboard Table */
-.scoreboard-table {
+/* Score table styling */
+.score-table {
+    width: 100%;
+}
+
+.score-table h3 {
+    margin: 0 0 15px 0;
+    color: #333;
+    font-size: 1.5em;
+    text-align: center;
+}
+
+.scores {
     width: 100%;
     border-collapse: collapse;
-    margin: 0;
     background: white;
     border-radius: 6px;
     overflow: hidden;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
-.scoreboard-table th {
+.scores th {
     background: #007bff;
     color: white;
-    padding: 12px 16px;
+    padding: 12px;
     text-align: left;
     font-weight: 600;
-    font-size: 14px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
 }
 
-.scoreboard-table td {
-    padding: 12px 16px;
-    border-bottom: 1px solid #e9ecef;
-    font-size: 16px;
-    transition: all 0.2s ease;
+.scores td {
+    padding: 12px;
+    border-bottom: 1px solid #dee2e6;
 }
 
-.scoreboard-table tr:last-child td {
+.scores tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.scores tbody tr:last-child td {
     border-bottom: none;
 }
 
-.scoreboard-table tr:hover {
-    background: #f8f9fa;
-}
-
-/* Leader Highlighting */
+/* Leader highlighting */
 .leader {
-    background: linear-gradient(135deg, #ffd700, #ffed4a) !important;
-    font-weight: bold;
-    position: relative;
-    animation: leaderGlow 2s ease-in-out infinite alternate;
+    background-color: #fff3cd !important;
+    border-left: 4px solid #ffc107;
 }
 
 .leader td {
-    color: #333;
-    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
-}
-
-.leader::before {
-    content: "\1F451";
-    position: absolute;
-    left: -8px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 18px;
-    animation: crownBounce 1s ease-in-out infinite alternate;
-}
-
-@keyframes leaderGlow {
-    0% { box-shadow: 0 0 5px rgba(255, 215, 0, 0.5); }
-    100% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.8); }
-}
-
-@keyframes crownBounce {
-    0% { transform: translateY(-50%) scale(1); }
-    100% { transform: translateY(-60%) scale(1.1); }
-}
-
-/* Round Progress Container */
-#round-progress-container {
-    margin: 20px 0;
-    padding: 20px;
-    background: #ffffff;
-    border: 2px solid #dee2e6;
-    border-radius: 8px;
-}
-
-/* Round Indicator */
-.round-indicator {
-    font-size: 24px;
     font-weight: bold;
-    text-align: center;
-    margin-bottom: 20px;
-    padding: 15px;
-    background: linear-gradient(135deg, #28a745, #20c997);
-    color: white;
-    border-radius: 6px;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    color: #856404;
 }
 
-/* Round Breakdown */
+.leader .player-name {
+    position: relative;
+}
+
+.leader .player-name::after {
+    content: "👑";
+    margin-left: 8px;
+    font-size: 16px;
+}
+
+/* Round progress styling */
+.round-display h3 {
+    margin: 0 0 15px 0;
+    color: #333;
+    text-align: center;
+    font-size: 1.3em;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 20px;
+    background-color: #e9ecef;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #28a745 0%, #20c997 100%);
+    transition: width 0.3s ease;
+    border-radius: 10px;
+}
+
+/* Round breakdown section */
 .round-breakdown {
     margin-top: 20px;
 }
 
-.breakdown-toggle {
-    width: 100%;
-    padding: 12px 20px;
-    background: #6c757d;
+.toggle-breakdown {
+    background: #007bff;
     color: white;
     border: none;
-    border-radius: 6px;
-    font-size: 16px;
-    font-weight: 500;
+    padding: 8px 16px;
+    border-radius: 4px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    font-size: 14px;
     margin-bottom: 15px;
+    transition: background-color 0.2s;
 }
 
-.breakdown-toggle:hover {
-    background: #5a6268;
-    transform: translateY(-1px);
+.toggle-breakdown:hover {
+    background: #0056b3;
 }
 
-.breakdown-toggle:active {
-    transform: translateY(0);
-}
-
-.breakdown-toggle[aria-expanded="true"] {
-    background: #dc3545;
-}
-
-.breakdown-toggle[aria-expanded="true"]:hover {
-    background: #c82333;
-}
-
-/* Breakdown Content */
 .breakdown-content {
-    animation: slideDown 0.3s ease-out;
+    animation: fadeIn 0.3s ease-in-out;
 }
 
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        max-height: 0;
-    }
-    to {
-        opacity: 1;
-        max-height: 500px;
-    }
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
-/* Breakdown Table */
-.breakdown-table {
+.round-scores {
     width: 100%;
     border-collapse: collapse;
     background: white;
     border-radius: 6px;
     overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    margin-top: 10px;
 }
 
-.breakdown-table th {
-    background: #495057;
+.round-scores th {
+    background: #6c757d;
     color: white;
-    padding: 10px 8px;
+    padding: 10px;
     text-align: center;
-    font-size: 12px;
     font-weight: 600;
+    font-size: 12px;
 }
 
-.breakdown-table th:first-child {
-    text-align: left;
-    padding-left: 16px;
-}
-
-.breakdown-table td {
+.round-scores td {
     padding: 8px;
     text-align: center;
     border-bottom: 1px solid #dee2e6;
     font-size: 14px;
 }
 
-.breakdown-table td:first-child {
-    text-align: left;
-    padding-left: 16px;
-    font-weight: 500;
+.round-scores tbody tr:nth-child(even) {
+    background-color: #f8f9fa;
 }
 
-.breakdown-table .total-cell {
-    background: #e9ecef;
-    font-weight: bold;
-    border-left: 2px solid #6c757d;
+.round-scores tbody tr:last-child td {
+    border-bottom: none;
 }
 
-.breakdown-table tr:hover {
-    background: #f8f9fa;
-}
-
-/* Error States */
+/* Error styling */
 .error {
-    padding: 15px;
+    color: #dc3545;
     background: #f8d7da;
-    color: #721c24;
     border: 1px solid #f5c6cb;
+    padding: 10px;
     border-radius: 4px;
     text-align: center;
-    font-weight: 500;
+    margin: 10px 0;
 }
 
-/* Responsive Design */
+/* Responsive design */
 @media (max-width: 768px) {
-    #scoreboard-container,
-    #round-progress-container {
-        margin: 15px 0;
+    #scoreboard, #round-progress {
+        margin: 10px;
         padding: 15px;
     }
     
-    .scoreboard-table th,
-    .scoreboard-table td {
-        padding: 8px 12px;
+    .scores th, .scores td {
+        padding: 8px;
         font-size: 14px;
     }
     
-    .round-indicator {
-        font-size: 20px;
-        padding: 12px;
-    }
-    
-    .breakdown-table {
+    .round-scores {
         font-size: 12px;
     }
     
-    .breakdown-table th,
-    .breakdown-table td {
-        padding: 6px 4px;
+    .round-scores th, .round-scores td {
+        padding: 6px;
     }
     
-    .breakdown-table td:first-child,
-    .breakdown-table th:first-child {
-        padding-left: 8px;
+    .score-table h3 {
+        font-size: 1.2em;
     }
     
-    .leader::before {
-        font-size: 14px;
-        left: -4px;
+    .round-display h3 {
+        font-size: 1.1em;
     }
 }
 
 @media (max-width: 480px) {
-    .scoreboard-table,
-    .breakdown-table {
-        font-size: 12px;
+    .scores, .round-scores {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
     }
     
-    .round-indicator {
-        font-size: 18px;
-    }
-    
-    .breakdown-toggle {
-        font-size: 14px;
-        padding: 10px 15px;
-    }
-}
-
-/* Print Styles */
-@media print {
-    .breakdown-toggle {
+    .leader .player-name::after {
         display: none;
     }
     
-    .breakdown-content {
-        display: block !important;
-    }
-    
-    .leader {
-        background: #f0f0f0 !important;
-        -webkit-print-color-adjust: exact;
-    }
-    
-    @keyframes leaderGlow,
-    @keyframes crownBounce {
-        0%, 100% { transform: none; box-shadow: none; }
+    .toggle-breakdown {
+        width: 100%;
     }
 }
