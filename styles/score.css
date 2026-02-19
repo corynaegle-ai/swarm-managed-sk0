@@ -1,0 +1,311 @@
+/* Score Display Styles */
+
+/* Scoreboard Container */
+.scoreboard {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin: 20px 0;
+  padding: 20px;
+}
+
+.scoreboard-title {
+  color: #333;
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0 0 20px 0;
+  text-align: center;
+}
+
+.no-players {
+  color: #666;
+  font-style: italic;
+  text-align: center;
+  padding: 20px;
+}
+
+/* Score Table */
+.score-table-container {
+  overflow-x: auto;
+}
+
+.score-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 16px;
+}
+
+.score-table th,
+.score-table td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.score-table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #495057;
+  text-transform: uppercase;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+}
+
+.score-table tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.score-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+/* Leader Highlighting */
+.leader-row {
+  background-color: #fff3cd !important;
+  border: 2px solid #ffc107;
+  font-weight: bold;
+}
+
+.leader-row:hover {
+  background-color: #ffeaa7 !important;
+}
+
+.leader-badge {
+  margin-left: 8px;
+  font-size: 18px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+/* Player Name and Score Styling */
+.player-name {
+  font-weight: 500;
+  color: #333;
+}
+
+.total-score {
+  font-size: 18px;
+  font-weight: bold;
+  color: #28a745;
+  text-align: right;
+}
+
+.leader-row .total-score {
+  color: #856404;
+}
+
+/* Toggle Details Button */
+.toggle-details {
+  background: #007bff;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 6px 12px;
+  transition: background-color 0.2s ease;
+}
+
+.toggle-details:hover {
+  background: #0056b3;
+}
+
+/* Round Details */
+.round-details {
+  background-color: #f8f9fa;
+}
+
+.round-details-content {
+  padding: 15px;
+  border: 1px solid #e9ecef;
+  border-radius: 4px;
+  background: white;
+}
+
+.rounds-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.round-item {
+  background: #e9ecef;
+  border-radius: 4px;
+  padding: 8px;
+  text-align: center;
+  transition: background-color 0.2s ease;
+}
+
+.round-item:hover {
+  background: #dee2e6;
+}
+
+.round-number {
+  display: block;
+  font-size: 12px;
+  color: #6c757d;
+  margin-bottom: 4px;
+}
+
+.round-score {
+  display: block;
+  font-size: 16px;
+  font-weight: bold;
+  color: #495057;
+}
+
+.total-summary {
+  background: #28a745;
+  color: white;
+  padding: 10px;
+  border-radius: 4px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+/* Round Progress Styles */
+.round-progress {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin: 20px 0;
+  padding: 20px;
+}
+
+.round-info h3 {
+  color: #333;
+  font-size: 20px;
+  margin: 0 0 15px 0;
+  text-align: center;
+}
+
+/* Progress Bar */
+.progress-bar-container {
+  margin: 20px 0;
+  text-align: center;
+}
+
+.progress-bar {
+  background: #e9ecef;
+  border-radius: 10px;
+  height: 20px;
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 10px;
+}
+
+.progress-fill {
+  background: linear-gradient(90deg, #28a745, #20c997);
+  height: 100%;
+  transition: width 0.3s ease;
+  border-radius: 10px;
+}
+
+.progress-text {
+  color: #495057;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Round Indicators */
+.round-indicators {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.round-indicator {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.round-indicator.completed {
+  background: #28a745;
+  color: white;
+}
+
+.round-indicator.current {
+  background: #ffc107;
+  color: #333;
+  transform: scale(1.1);
+  box-shadow: 0 2px 8px rgba(255, 193, 7, 0.3);
+}
+
+.round-indicator.upcoming {
+  background: #e9ecef;
+  color: #6c757d;
+}
+
+.round-indicator:hover {
+  transform: scale(1.05);
+}
+
+.round-indicator.current:hover {
+  transform: scale(1.15);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .scoreboard,
+  .round-progress {
+    margin: 10px 0;
+    padding: 15px;
+  }
+  
+  .score-table th,
+  .score-table td {
+    padding: 8px 10px;
+    font-size: 14px;
+  }
+  
+  .scoreboard-title {
+    font-size: 20px;
+  }
+  
+  .rounds-grid {
+    grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+    gap: 8px;
+  }
+  
+  .round-indicators {
+    gap: 6px;
+  }
+  
+  .round-indicator {
+    width: 30px;
+    height: 30px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .score-table-container {
+    font-size: 12px;
+  }
+  
+  .total-score {
+    font-size: 16px;
+  }
+  
+  .toggle-details {
+    font-size: 12px;
+    padding: 4px 8px;
+  }
+}
