@@ -1,4 +1,208 @@
-// Score Display Module
+/**
+ * Score Display Module
+ * Renders score displays in the DOM
+ * Uses global scope - no imports/exports for browser compatibility
+ */
+
+/**
+ * Renders the main scoreboard with player scores
+ * @param {string} containerId - ID of the DOM container element
+ */
+function renderScoreBoard(containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  // Get players from global playerSetup
+  const players = (window.playerSetup && window.playerSetup.getPlayers()) || [];
+  
+  if (players.length === 0) {
+    container.innerHTML = `
+      <div class="scoreboard">
+        <h2 class="scoreboard-title">Scoreboard</h2>
+        <p class="no-players">No players added yet</p>
+      </div>
+    `;
+    return;
+  }
+
+  // Get leader from global scoreManager
+  const leaderId = typeof getLeader === 'function' ? getLeader() : null;
+
+  // Build player rows with scores
+  const playerRows = players.map(player => {
+    const totalScore = typeof getTotalScore === 'function' ? getTotalScore(player.id) : 0;
+    const isLeader = player.id === leaderId;
+    const leaderClass = isLeader ? 'leader-row' : '';
+    const leaderBadge = isLeader ? '<span class="leader-badge">👑</span>' : '';
+
+    return `
+      <tr class="${leaderClass}" data-player-id="${player.id}">
+        <td class="player-name">${player.name}${leaderBadge}</td>
+        <td class="total-score">${totalScore}</td>
+        <td>
+          <button class="toggle-details" onclick="toggleRoundDetails('${player.id}')">
+            View Rounds
+          </button>
+        </td>
+      </tr>
+      <tr class="round-details" id="details-${player.id}" style="display: none;">
+        <td colspan="3">
+          <div class="round-details-content">
+            ${renderPlayerRoundDetails(player.id)}
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+
+  container.innerHTML = `
+    <div class="scoreboard">
+      <h2 class="scoreboard-title">Scoreboard</h2>
+      <div class="score-table-container">
+        <table class="score-table">
+          <thead>
+            <tr>
+              <th>Player</th>
+              <th>Total Score</th>
+              <th>Details</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${playerRows}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+/**
+ * Renders round-by-round score details for a player
+ * @param {string} playerId - Player ID
+ * @returns {string} HTML string for round details
+ */
+function renderPlayerRoundDetails(playerId) {
+  const rounds = typeof getPlayerRounds === 'function' ? getPlayerRounds(playerId) : [];
+  const totalScore = typeof getTotalScore === 'function' ? getTotalScore(playerId) : 0;
+
+  if (rounds.length === 0) {
+    return '<p style="text-align: center; color: #666;">No rounds played yet</p>';
+  }
+
+  const roundItems = rounds.map((score, index) => `
+    <div class="round-item">
+      <span class="round-number">Round ${index + 1}</span>
+      <span class="round-score">${score}</span>
+    </div>
+  `).join('');
+
+  return `
+    <div class="rounds-grid">
+      ${roundItems}
+    </div>
+    <div class="total-summary">
+      Total: ${totalScore}
+    </div>
+  `;
+}
+
+/**
+ * Toggles visibility of round details for a player
+ * @param {string} playerId - Player ID
+ */
+function toggleRoundDetails(playerId) {
+  const detailsRow = document.getElementById(`details-${playerId}`);
+  if (detailsRow) {
+    const isVisible = detailsRow.style.display !== 'none';
+    detailsRow.style.display = isVisible ? 'none' : 'table-row';
+  }
+}
+
+/**
+ * Renders the round progress indicator
+ * @param {string} containerId - ID of the DOM container element
+ */
+function renderRoundProgress(containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  const currentRound = typeof getCurrentRound === 'function' ? getCurrentRound() : 1;
+  const totalRounds = 10;
+  const progressPercent = (currentRound / totalRounds) * 100;
+
+  // Generate round indicators
+  const indicators = [];
+  for (let i = 1; i <= totalRounds; i++) {
+    let className = 'round-indicator';
+    if (i < currentRound) {
+      className += ' completed';
+    } else if (i === currentRound) {
+      className += ' current';
+    } else {
+      className += ' upcoming';
+    }
+    indicators.push(`<div class="${className}">${i}</div>`);
+  }
+
+  container.innerHTML = `
+    <div class="round-progress">
+      <div class="round-info">
+        <h3>Round ${currentRound} of ${totalRounds}</h3>
+      </div>
+      <div class="progress-bar-container">
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: ${progressPercent}%"></div>
+        </div>
+        <p class="progress-text">${currentRound} / ${totalRounds} rounds completed</p>
+      </div>
+      <div class="round-indicators">
+        ${indicators.join('')}
+      </div>
+    </div>
+  `;
+}
+
+/**
+ * Updates the leader highlighting in the scoreboard
+ * Should be called after scores change
+ */
+function updateLeaderHighlight() {
+  const leaderId = typeof getLeader === 'function' ? getLeader() : null;
+  
+  // Remove all existing leader classes
+  const allRows = document.querySelectorAll('.score-table tbody tr[data-player-id]');
+  allRows.forEach(row => {
+    row.classList.remove('leader-row');
+    // Remove existing leader badge
+    const badge = row.querySelector('.leader-badge');
+    if (badge) {
+      badge.remove();
+    }
+  });
+
+  // Add leader class and badge to current leader
+  if (leaderId) {
+    const leaderRow = document.querySelector(`tr[data-player-id="${leaderId}"]`);
+    if (leaderRow) {
+      leaderRow.classList.add('leader-row');
+      const nameCell = leaderRow.querySelector('.player-name');
+      if (nameCell && !nameCell.querySelector('.leader-badge')) {
+        nameCell.innerHTML += '<span class="leader-badge">👑</span>';
+      }
+    }
+  }
+}
+
+// Make functions available globally for browser
+window.renderScoreBoard = renderScoreBoard;
+window.renderRoundProgress = renderRoundProgress;
+window.updateLeaderHighlight = updateLeaderHighlight;
+window.toggleRoundDetails = toggleRoundDetails;
+
+// Export for Node.js testing environment (if applicable)
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { renderScoreBoard, renderRoundProgress, updateLeaderHighlight };
+}// Score Display Module
 // Handles rendering of score displays, round progress, and leader highlighting
 
 /**

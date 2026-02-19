@@ -3,31 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scorekeeper - Player Setup</title>
-    <link rel="stylesheet" href="src/styles/player-setup.css">
+    <title>Scorekeeper App</title>
+    <!-- Add your CSS links here -->
 </head>
 <body>
     <div id="app">
-        <div id="player-setup-container"></div>
+        <!-- Application content will be rendered here -->
     </div>
 
-    <script src="src/player-setup.js"></script>
-    <script src="src/player-setup-ui.js"></script>
-    <script>
-        // Initialize the application
-        document.addEventListener('DOMContentLoaded', function() {
-            const playerSetup = new PlayerSetup();
-            const playerSetupUI = new PlayerSetupUI(playerSetup);
-            const container = document.getElementById('player-setup-container');
-            
-            playerSetupUI.initialize(container);
-            
-            // Listen for game start event
-            document.addEventListener('gameStart', function(event) {
-                console.log('Game starting with players:', event.detail.players);
-                alert(`Game starting with ${event.detail.players.length} players!\n\nPlayers: ${event.detail.players.map(p => p.name).join(', ')}`);
-            });
-        });
-    </script>
+    <!-- Add your script tags here -->
 </body>
 </html>
