@@ -1,0 +1,406 @@
+/* Score Display Styles */
+
+/* Scoreboard Container */
+.scoreboard {
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.scoreboard h3 {
+    margin: 0 0 15px 0;
+    color: #333;
+    font-size: 1.5em;
+    text-align: center;
+}
+
+/* Score Table */
+.score-table {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.score-header {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 15px;
+    padding: 12px 15px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    font-weight: bold;
+    color: #555;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.score-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 15px;
+    padding: 15px;
+    background: #fff;
+    border: 2px solid #e9ecef;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.score-row:hover {
+    background: #f8f9fa;
+    border-color: #007bff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+}
+
+/* Leader Row Styling */
+.leader-row {
+    background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+    border: 2px solid #ffc107;
+    box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+}
+
+.leader-row:hover {
+    background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
+    border-color: #e0a800;
+}
+
+.leader-crown {
+    font-size: 1.2em;
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-5px);
+    }
+    60% {
+        transform: translateY(-3px);
+    }
+}
+
+/* Score Row Content */
+.player-name-col {
+    font-weight: 600;
+    color: #333;
+    display: flex;
+    align-items: center;
+}
+
+.total-score-col {
+    font-weight: bold;
+    font-size: 1.3em;
+    color: #007bff;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.actions-col {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Buttons */
+.details-btn {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.3s ease;
+}
+
+.details-btn:hover {
+    background: #0056b3;
+    transform: translateY(-1px);
+}
+
+.close-details-btn {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 15px;
+    transition: background-color 0.3s ease;
+}
+
+.close-details-btn:hover {
+    background: #545b62;
+}
+
+/* Player Details */
+.player-details {
+    background: #f8f9fa;
+    padding: 20px;
+    margin: 10px 0;
+    border-radius: 6px;
+    border: 2px solid #dee2e6;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.player-details h4 {
+    margin: 0 0 15px 0;
+    color: #333;
+    text-align: center;
+}
+
+/* Rounds Grid */
+.rounds-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.round-cell {
+    background: #fff;
+    border: 2px solid #dee2e6;
+    border-radius: 6px;
+    padding: 10px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.round-cell.completed-round {
+    background: #d4edda;
+    border-color: #28a745;
+}
+
+.round-cell.current-round {
+    background: #fff3cd;
+    border-color: #ffc107;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 193, 7, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 193, 7, 0);
+    }
+}
+
+.round-number {
+    font-size: 0.8em;
+    font-weight: bold;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.round-score {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Round Progress */
+.round-progress {
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.round-progress h3 {
+    margin: 0 0 20px 0;
+    color: #333;
+    font-size: 1.5em;
+}
+
+.round-indicator {
+    margin-bottom: 20px;
+}
+
+.round-text {
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #007bff;
+    background: #e3f2fd;
+    padding: 10px 20px;
+    border-radius: 25px;
+    display: inline-block;
+}
+
+/* Progress Bar */
+.progress-bar-container {
+    margin: 20px 0;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 12px;
+    background: #e9ecef;
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #007bff, #0056b3);
+    transition: width 0.5s ease;
+    position: relative;
+}
+
+.progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* Round Circles */
+.round-circles {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.round-circle {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: #e9ecef;
+    border: 2px solid #dee2e6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.9em;
+    color: #6c757d;
+    transition: all 0.3s ease;
+}
+
+.round-circle.completed {
+    background: #28a745;
+    border-color: #1e7e34;
+    color: white;
+    transform: scale(1.1);
+}
+
+.round-circle.current {
+    background: #ffc107;
+    border-color: #e0a800;
+    color: #333;
+    transform: scale(1.2);
+    animation: glow 2s infinite;
+}
+
+@keyframes glow {
+    0%, 100% {
+        box-shadow: 0 0 5px rgba(255, 193, 7, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(255, 193, 7, 0.8);
+    }
+}
+
+/* Error and Empty States */
+.error {
+    background: #f8d7da;
+    color: #721c24;
+    padding: 15px;
+    border-radius: 6px;
+    border: 1px solid #f5c6cb;
+    text-align: center;
+    font-weight: bold;
+}
+
+.no-players {
+    background: #d1ecf1;
+    color: #0c5460;
+    padding: 20px;
+    border-radius: 6px;
+    border: 1px solid #bee5eb;
+    text-align: center;
+    font-style: italic;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .score-header,
+    .score-row {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        text-align: center;
+    }
+    
+    .rounds-grid {
+        grid-template-columns: repeat(5, 1fr);
+    }
+    
+    .round-circles {
+        gap: 5px;
+    }
+    
+    .round-circle {
+        width: 30px;
+        height: 30px;
+        font-size: 0.8em;
+    }
+    
+    .scoreboard,
+    .round-progress {
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .rounds-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+    }
+    
+    .round-cell {
+        padding: 8px;
+    }
+    
+    .round-text {
+        font-size: 1.1em;
+        padding: 8px 15px;
+    }
+}
