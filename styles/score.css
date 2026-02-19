@@ -150,6 +150,20 @@
   transition: background-color 0.2s ease;
   width: 100%;
   margin-bottom: 15px;
+  position: relative;
+}
+
+.toggle-breakdown::after {
+  content: '▼';
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: transform 0.3s ease;
+}
+
+.toggle-breakdown.active::after {
+  transform: translateY(-50%) rotate(180deg);
 }
 
 .toggle-breakdown:hover {
@@ -162,6 +176,17 @@
 
 .breakdown-content {
   overflow-x: auto;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+  overflow: hidden;
+}
+
+.breakdown-content.expanded {
+  max-height: 1000px;
+  opacity: 1;
+  overflow-x: auto;
+  overflow-y: visible;
 }
 
 .breakdown-table {
