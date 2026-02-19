@@ -1,7 +1,7 @@
 /* Score Display Styles */
 
 /* Scoreboard Styles */
-.scoreboard {
+#scoreboard {
   background: #fff;
   border-radius: 8px;
   padding: 20px;
@@ -9,7 +9,7 @@
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
-.scoreboard h3 {
+#scoreboard h3 {
   margin: 0 0 15px 0;
   color: #333;
   font-size: 1.4em;
@@ -83,7 +83,7 @@
 }
 
 /* Round Progress Styles */
-.round-progress {
+#round-progress {
   background: #fff;
   border-radius: 8px;
   padding: 20px;
@@ -91,7 +91,7 @@
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
-.round-progress h3 {
+#round-progress h3 {
   margin: 0 0 15px 0;
   color: #333;
   font-size: 1.4em;
@@ -191,8 +191,8 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .scoreboard,
-  .round-progress {
+  #scoreboard,
+  #round-progress {
     padding: 15px;
     margin: 10px 0;
   }
