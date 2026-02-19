@@ -90,6 +90,8 @@
 
 .progress-fill {
   height: 100%;
+  background: #28a745; /* Fallback for older browsers */
+  background: -webkit-linear-gradient(left, #28a745 0%, #20c997 100%);
   background: linear-gradient(90deg, #28a745 0%, #20c997 100%);
   transition: width 0.3s ease;
   border-radius: 10px;
@@ -138,6 +140,12 @@
 }
 
 .rounds-grid {
+  display: -webkit-box; /* Fallback for older browsers */
+  display: -ms-flexbox; /* Fallback for IE10 */
+  display: flex;
+  -webkit-box-wrap: wrap;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
   gap: 10px;
@@ -145,9 +153,19 @@
 }
 
 .round-score {
+  display: -webkit-box; /* Fallback for older browsers */
+  display: -ms-flexbox; /* Fallback for IE10 */
   display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
   flex-direction: column;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
   align-items: center;
+  -webkit-box-flex: 1;
+  -ms-flex: 1 0 80px; /* Fallback flex basis for non-grid browsers */
+  flex: 1 0 80px;
   padding: 8px;
   border: 1px solid #dee2e6;
   border-radius: 4px;
@@ -219,6 +237,11 @@
   }
   
   .round-score {
+    -ms-flex: 1 0 60px; /* Adjust flex basis for mobile */
+    flex: 1 0 60px;
+  }
+  
+  .round-score {
     padding: 6px;
   }
   
@@ -235,6 +258,11 @@
   
   .rounds-grid {
     grid-template-columns: repeat(5, 1fr);
+  }
+  
+  .round-score {
+    -ms-flex: 1 0 calc(20% - 8px); /* 5 columns with gap */
+    flex: 1 0 calc(20% - 8px);
   }
   
   .score-table tbody tr.leader .player-name::after {
