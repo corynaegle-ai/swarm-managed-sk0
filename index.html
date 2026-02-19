@@ -3,23 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Swarm Managed Application</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Scorekeeper - Player Setup</title>
+    <link rel="stylesheet" href="src/styles/player-setup.css">
 </head>
 <body>
     <div id="app">
-        <header>
-            <h1>Swarm Managed Application</h1>
-        </header>
-        <main>
-            <div id="content">
-                <p>Welcome to the application. Loading...</p>
-            </div>
-        </main>
-        <footer>
-            <p>&copy; 2024 Swarm Managed SK0</p>
-        </footer>
+        <div id="player-setup-container"></div>
     </div>
-    <script src="app.js"></script>
+
+    <script src="src/player-setup.js"></script>
+    <script src="src/player-setup-ui.js"></script>
+    <script>
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            const playerSetup = new PlayerSetup();
+            const playerSetupUI = new PlayerSetupUI(playerSetup);
+            const container = document.getElementById('player-setup-container');
+            
+            playerSetupUI.initialize(container);
+            
+            // Listen for game start event
+            document.addEventListener('gameStart', function(event) {
+                console.log('Game starting with players:', event.detail.players);
+                alert(`Game starting with ${event.detail.players.length} players!\n\nPlayers: ${event.detail.players.map(p => p.name).join(', ')}`);
+            });
+        });
+    </script>
 </body>
 </html>
