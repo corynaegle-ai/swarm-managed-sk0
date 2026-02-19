@@ -98,4 +98,6 @@ class PlayerSetup {
   }
 }
 
-module.exports = PlayerSetup;
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = PlayerSetup;
+}

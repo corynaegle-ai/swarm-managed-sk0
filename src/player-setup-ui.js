@@ -211,4 +211,6 @@ class PlayerSetupUI {
   }
 }
 
-module.exports = PlayerSetupUI;
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = PlayerSetupUI;
+}
