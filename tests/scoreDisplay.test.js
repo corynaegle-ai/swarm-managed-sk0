@@ -1,149 +1,181 @@
-// Score Display Tests
-
-// Mock DOM elements
-function createMockDOM() {
-    const scoreboardContainer = document.createElement('div');
-    scoreboardContainer.id = 'scoreboard-container';
-    document.body.appendChild(scoreboardContainer);
-    
-    const roundProgressContainer = document.createElement('div');
-    roundProgressContainer.id = 'round-progress-container';
-    document.body.appendChild(roundProgressContainer);
-    
-    return { scoreboardContainer, roundProgressContainer };
-}
+/**
+ * Tests for scoreDisplay.js
+ * Mock scoreManager functions for testing
+ */
 
 // Mock scoreManager functions
-const mockScores = {
-    'Alice': { total: 150, rounds: [10, 20, 30, 40, 50, 0, 0, 0, 0, 0] },
-    'Bob': { total: 120, rounds: [15, 25, 35, 45, 0, 0, 0, 0, 0, 0] },
-    'Charlie': { total: 180, rounds: [20, 30, 40, 50, 40, 0, 0, 0, 0, 0] }
+window.getAllScores = function() {
+    return {
+        'Alice': { total: 150, rounds: [20, 30, 25, 35, 40] },
+        'Bob': { total: 120, rounds: [15, 25, 20, 30, 30] },
+        'Charlie': { total: 180, rounds: [25, 35, 30, 40, 50] }
+    };
 };
 
-function getAllScores() {
-    return mockScores;
-}
+window.getTotalScore = function(playerId) {
+    const scores = getAllScores();
+    return scores[playerId] ? scores[playerId].total : 0;
+};
 
-function getTotalScore(playerId) {
-    return mockScores[playerId] ? mockScores[playerId].total : 0;
-}
+window.getPlayerRounds = function(playerId) {
+    const scores = getAllScores();
+    return scores[playerId] ? scores[playerId].rounds : [];
+};
 
-function getPlayerRounds(playerId) {
-    return mockScores[playerId] ? mockScores[playerId].rounds : [];
-}
+window.getCurrentRound = function() {
+    return 6;
+};
 
-function getCurrentRound() {
-    return 5;
-}
-
-function getLeader() {
-    let leader = null;
-    let highestScore = -1;
-    Object.keys(mockScores).forEach(function(playerId) {
-        if (mockScores[playerId].total > highestScore) {
-            highestScore = mockScores[playerId].total;
-            leader = playerId;
-        }
+window.getLeader = function() {
+    const scores = getAllScores();
+    const playerIds = Object.keys(scores);
+    if (playerIds.length === 0) return null;
+    
+    return playerIds.reduce((leader, playerId) => {
+        return getTotalScore(playerId) > getTotalScore(leader) ? playerId : leader;
     });
-    return leader;
-}
+};
 
-// Test renderScoreBoard
-function testRenderScoreBoard() {
-    const { scoreboardContainer } = createMockDOM();
-    
-    // Load the scoreDisplay functions (normally loaded via script tag)
-    eval(require('fs').readFileSync('./js/scoreDisplay.js', 'utf8'));
-    
-    renderScoreBoard();
-    
-    // Check if scoreboard was rendered
-    const scoreboard = scoreboardContainer.querySelector('.scoreboard');
-    console.assert(scoreboard !== null, 'Scoreboard should be rendered');
-    
-    // Check if players are displayed
-    const playerRows = scoreboardContainer.querySelectorAll('tbody tr:not(.round-details)');
-    console.assert(playerRows.length === 3, 'Should display 3 players');
-    
-    // Check if leader is highlighted
-    const leaderRow = scoreboardContainer.querySelector('.leader-row');
-    console.assert(leaderRow !== null, 'Leader should be highlighted');
-    
-    // Check if details buttons exist
-    const detailsButtons = scoreboardContainer.querySelectorAll('.details-btn');
-    console.assert(detailsButtons.length === 3, 'Should have details buttons for all players');
-    
-    console.log('✓ renderScoreBoard tests passed');
-}
+// Test setup
+describe('scoreDisplay.js', function() {
+    beforeEach(function() {
+        // Create DOM elements for testing
+        document.body.innerHTML = `
+            <div id="scoreboard-container"></div>
+            <div id="round-progress-container"></div>
+        `;
+    });
 
-// Test renderRoundProgress
-function testRenderRoundProgress() {
-    const { roundProgressContainer } = createMockDOM();
-    
-    eval(require('fs').readFileSync('./js/scoreDisplay.js', 'utf8'));
-    
-    renderRoundProgress();
-    
-    // Check if round progress was rendered
-    const roundProgress = roundProgressContainer.querySelector('.round-progress');
-    console.assert(roundProgress !== null, 'Round progress should be rendered');
-    
-    // Check round title
-    const title = roundProgress.querySelector('h3');
-    console.assert(title.textContent === 'Round 5 of 10', 'Should show correct round');
-    
-    // Check progress bar
-    const progressFill = roundProgress.querySelector('.progress-fill');
-    console.assert(progressFill.style.width === '50%', 'Progress bar should be 50% for round 5');
-    
-    // Check round indicators
-    const indicators = roundProgress.querySelectorAll('.round-indicator');
-    console.assert(indicators.length === 10, 'Should have 10 round indicators');
-    
-    console.log('✓ renderRoundProgress tests passed');
-}
+    describe('renderScoreBoard', function() {
+        it('should render scoreboard with all players', function() {
+            renderScoreBoard();
+            
+            const container = document.getElementById('scoreboard-container');
+            expect(container.innerHTML).toContain('Current Standings');
+            expect(container.innerHTML).toContain('Alice');
+            expect(container.innerHTML).toContain('Bob');
+            expect(container.innerHTML).toContain('Charlie');
+        });
 
-// Test updateLeaderHighlight
-function testUpdateLeaderHighlight() {
-    const { scoreboardContainer } = createMockDOM();
-    
-    eval(require('fs').readFileSync('./js/scoreDisplay.js', 'utf8'));
-    
-    // First render the scoreboard
-    renderScoreBoard();
-    
-    // Update leader highlight
-    updateLeaderHighlight();
-    
-    // Check if Charlie (highest score) is highlighted
-    const charlieRow = scoreboardContainer.querySelector('[data-player="Charlie"]');
-    console.assert(charlieRow.classList.contains('leader-row'), 'Charlie should be highlighted as leader');
-    
-    console.log('✓ updateLeaderHighlight tests passed');
-}
+        it('should sort players by total score', function() {
+            renderScoreBoard();
+            
+            const rows = document.querySelectorAll('.score-table tbody tr:not(.details-row)');
+            expect(rows[0].textContent).toContain('Charlie'); // Highest score (180)
+            expect(rows[1].textContent).toContain('Alice');   // Middle score (150)
+            expect(rows[2].textContent).toContain('Bob');     // Lowest score (120)
+        });
 
-// Test XSS prevention
-function testXSSPrevention() {
-    eval(require('fs').readFileSync('./js/scoreDisplay.js', 'utf8'));
-    
-    const maliciousInput = '<script>alert("XSS")</script>';
-    const escaped = escapeHtml(maliciousInput);
-    
-    console.assert(!escaped.includes('<script>'), 'Script tags should be escaped');
-    console.assert(escaped.includes('&lt;script&gt;'), 'Should contain escaped HTML');
-    
-    console.log('✓ XSS prevention tests passed');
-}
+        it('should highlight the leader', function() {
+            renderScoreBoard();
+            
+            const leaderRow = document.querySelector('.leader-row');
+            expect(leaderRow).toBeTruthy();
+            expect(leaderRow.textContent).toContain('Charlie');
+        });
 
-// Run tests if in Node.js environment
-if (typeof module !== 'undefined' && module.exports) {
-    try {
-        testRenderScoreBoard();
-        testRenderRoundProgress();
-        testUpdateLeaderHighlight();
-        testXSSPrevention();
-        console.log('\n✅ All scoreDisplay tests passed!');
-    } catch (error) {
-        console.error('❌ Tests failed:', error);
-    }
-}
+        it('should handle empty player list', function() {
+            window.getAllScores = function() { return {}; };
+            
+            renderScoreBoard();
+            
+            const container = document.getElementById('scoreboard-container');
+            expect(container.innerHTML).toContain('No players registered yet');
+        });
+    });
+
+    describe('renderRoundProgress', function() {
+        it('should display current round information', function() {
+            renderRoundProgress();
+            
+            const container = document.getElementById('round-progress-container');
+            expect(container.innerHTML).toContain('Round 6 of 10');
+        });
+
+        it('should show correct progress percentage', function() {
+            renderRoundProgress();
+            
+            const progressFill = document.querySelector('.progress-fill');
+            expect(progressFill.style.width).toBe('50%'); // Round 6: (6-1)/10 * 100 = 50%
+        });
+
+        it('should mark completed and current rounds correctly', function() {
+            renderRoundProgress();
+            
+            const completed = document.querySelectorAll('.round-indicator.completed');
+            const current = document.querySelector('.round-indicator.current');
+            
+            expect(completed.length).toBe(5); // Rounds 1-5 completed
+            expect(current.textContent).toBe('6'); // Round 6 is current
+        });
+    });
+
+    describe('updateLeaderHighlight', function() {
+        it('should remove old leader highlights and add new ones', function() {
+            // Setup initial scoreboard
+            renderScoreBoard();
+            
+            // Mock a different leader
+            window.getLeader = function() { return 'Alice'; };
+            
+            updateLeaderHighlight();
+            
+            const leaderRows = document.querySelectorAll('.leader-row');
+            expect(leaderRows.length).toBe(1);
+            expect(leaderRows[0].textContent).toContain('Alice');
+        });
+
+        it('should handle no leader gracefully', function() {
+            renderScoreBoard();
+            
+            window.getLeader = function() { return null; };
+            
+            updateLeaderHighlight();
+            
+            const leaderRows = document.querySelectorAll('.leader-row');
+            expect(leaderRows.length).toBe(0);
+        });
+    });
+
+    describe('togglePlayerDetails', function() {
+        it('should toggle player details visibility', function() {
+            renderScoreBoard();
+            
+            const detailsRow = document.getElementById('details-Alice');
+            expect(detailsRow.style.display).toBe('none');
+            
+            togglePlayerDetails('Alice');
+            expect(detailsRow.style.display).toBe('table-row');
+            
+            togglePlayerDetails('Alice');
+            expect(detailsRow.style.display).toBe('none');
+        });
+
+        it('should update button text when toggling', function() {
+            renderScoreBoard();
+            
+            const button = document.querySelector('.details-btn[data-player="Alice"]');
+            expect(button.textContent).toBe('View Details');
+            
+            togglePlayerDetails('Alice');
+            expect(button.textContent).toBe('Hide Details');
+            
+            togglePlayerDetails('Alice');
+            expect(button.textContent).toBe('View Details');
+        });
+    });
+
+    describe('escapeHtml', function() {
+        it('should escape HTML characters', function() {
+            const result = escapeHtml('<script>alert("xss")</script>');
+            expect(result).not.toContain('<script>');
+            expect(result).toContain('&lt;script&gt;');
+        });
+
+        it('should handle quotes and ampersands', function() {
+            const result = escapeHtml('"Hello & Goodbye"');
+            expect(result).toContain('&quot;');
+            expect(result).toContain('&amp;');
+        });
+    });
+});
