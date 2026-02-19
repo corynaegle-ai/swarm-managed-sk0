@@ -3,165 +3,331 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Setup</title>
+    <title>Game Player Setup</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         .setup-section {
-            background: #f5f5f5;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+            display: block;
         }
         .game-area {
-            background: #e8f4f8;
-            padding: 20px;
-            border-radius: 8px;
             display: none;
         }
-        .player-input-group {
-            margin-bottom: 15px;
+        .form-group {
+            margin-bottom: 20px;
         }
-        .player-input-group input {
-            padding: 8px;
-            margin-right: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
         }
-        .btn {
-            padding: 8px 16px;
-            background: #007bff;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .btn:hover {
-            background: #0056b3;
-        }
-        .btn-remove {
-            background: #dc3545;
-            padding: 4px 8px;
-            font-size: 12px;
-        }
-        .btn-remove:hover {
-            background: #c82333;
-        }
-        .btn-start {
-            background: #28a745;
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
             font-size: 16px;
-            padding: 12px 24px;
-            margin-top: 15px;
         }
-        .btn-start:hover {
-            background: #218838;
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px 0;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+        .start-game-btn {
+            background-color: #28a745;
+            font-size: 18px;
+            padding: 15px 30px;
+            margin-top: 20px;
+        }
+        .start-game-btn:hover {
+            background-color: #1e7e34;
         }
         .player-list {
-            margin: 15px 0;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            min-height: 100px;
         }
         .player-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px;
+            padding: 10px;
+            margin: 5px 0;
             background: white;
-            margin-bottom: 5px;
-            border-radius: 4px;
-            border: 1px solid #ddd;
+            border-radius: 5px;
+            border: 1px solid #e9ecef;
+        }
+        .player-name {
+            font-weight: bold;
+        }
+        .remove-btn {
+            background-color: #dc3545;
+            padding: 5px 10px;
+            font-size: 14px;
+        }
+        .remove-btn:hover {
+            background-color: #c82333;
         }
         .player-count {
+            font-size: 18px;
             font-weight: bold;
-            color: #666;
-            margin-bottom: 10px;
+            color: #007bff;
+            margin: 10px 0;
+        }
+        .empty-state {
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #495057;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
         }
     </style>
 </head>
 <body>
-    <div id="player-setup" class="setup-section" data-section="setup">
+    <div class="container">
         <h1>Game Setup</h1>
         
-        <div class="player-input-group">
-            <label for="player-name-input">Player Name:</label>
-            <input type="text" id="player-name-input" placeholder="Enter player name" data-input="player-name">
-            <button id="add-player-btn" class="btn" data-action="add-player">Add Player</button>
-        </div>
-        
-        <div class="player-count" id="player-count" data-display="player-count">0/8 players</div>
-        
-        <div class="player-list" id="player-list" data-container="players">
-            <!-- Dynamic player list will be populated here -->
-        </div>
-        
-        <button id="start-game-btn" class="btn btn-start" data-action="start-game">Start Game</button>
-    </div>
-    
-    <div id="game-area" class="game-area" data-section="game">
-        <h2>Game Area</h2>
-        <p>Game content will be displayed here once the game starts.</p>
-        <!-- Game content will be added here -->
-    </div>
-    
-    <script>
-        // Basic JavaScript for demonstration purposes
-        let players = [];
-        const maxPlayers = 8;
-        
-        const playerNameInput = document.getElementById('player-name-input');
-        const addPlayerBtn = document.getElementById('add-player-btn');
-        const playerList = document.getElementById('player-list');
-        const playerCount = document.getElementById('player-count');
-        const startGameBtn = document.getElementById('start-game-btn');
-        
-        function updatePlayerCount() {
-            playerCount.textContent = `${players.length}/${maxPlayers} players`;
-        }
-        
-        function addPlayer() {
-            const name = playerNameInput.value.trim();
-            if (name && players.length < maxPlayers && !players.includes(name)) {
-                players.push(name);
-                renderPlayerList();
-                updatePlayerCount();
-                playerNameInput.value = '';
-            }
-        }
-        
-        function removePlayer(playerName) {
-            players = players.filter(p => p !== playerName);
-            renderPlayerList();
-            updatePlayerCount();
-        }
-        
-        function renderPlayerList() {
-            playerList.innerHTML = players.map((player, index) => `
-                <div class="player-item" data-player="${player}">
-                    <span>${player}</span>
-                    <button class="btn btn-remove" onclick="removePlayer('${player}')" data-action="remove-player" data-player-name="${player}">Remove</button>
+        <!-- Player Setup Section (Initially Visible) -->
+        <section id="player-setup" class="setup-section" data-section="player-setup">
+            <h2>Add Players</h2>
+            
+            <!-- Player Input Form -->
+            <div class="form-group">
+                <label for="player-name-input">Player Name:</label>
+                <input 
+                    type="text" 
+                    id="player-name-input" 
+                    data-input="player-name" 
+                    placeholder="Enter player name" 
+                    maxlength="50"
+                >
+            </div>
+            
+            <button 
+                id="add-player-btn" 
+                data-action="add-player" 
+                type="button"
+            >
+                Add Player
+            </button>
+            
+            <!-- Player Count Display -->
+            <div class="player-count" id="player-count" data-display="player-count">
+                0/8 players
+            </div>
+            
+            <!-- Players List -->
+            <div class="form-group">
+                <label>Current Players:</label>
+                <div id="player-list" class="player-list" data-list="players">
+                    <div class="empty-state" id="empty-state" data-state="empty">
+                        No players added yet. Add some players to get started!
+                    </div>
                 </div>
-            `).join('');
-        }
+            </div>
+            
+            <!-- Start Game Button -->
+            <button 
+                id="start-game-btn" 
+                class="start-game-btn" 
+                data-action="start-game" 
+                type="button" 
+                disabled
+            >
+                Start Game
+            </button>
+        </section>
         
-        function startGame() {
-            if (players.length > 0) {
-                document.getElementById('player-setup').style.display = 'none';
-                document.getElementById('game-area').style.display = 'block';
+        <!-- Game Area Section (Initially Hidden) -->
+        <section id="game-area" class="game-area" data-section="game-area">
+            <h2>Game in Progress</h2>
+            <p>Game content will be displayed here once the game starts.</p>
+            
+            <button 
+                id="back-to-setup-btn" 
+                data-action="back-to-setup" 
+                type="button"
+            >
+                Back to Setup
+            </button>
+        </section>
+    </div>
+
+    <script>
+        // Player management functionality
+        class PlayerManager {
+            constructor() {
+                this.players = [];
+                this.maxPlayers = 8;
+                this.init();
+            }
+
+            init() {
+                // Get DOM elements
+                this.playerNameInput = document.getElementById('player-name-input');
+                this.addPlayerBtn = document.getElementById('add-player-btn');
+                this.playerList = document.getElementById('player-list');
+                this.playerCount = document.getElementById('player-count');
+                this.startGameBtn = document.getElementById('start-game-btn');
+                this.emptyState = document.getElementById('empty-state');
+                this.playerSetup = document.getElementById('player-setup');
+                this.gameArea = document.getElementById('game-area');
+                this.backToSetupBtn = document.getElementById('back-to-setup-btn');
+
+                // Bind events
+                this.addPlayerBtn.addEventListener('click', () => this.addPlayer());
+                this.playerNameInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        this.addPlayer();
+                    }
+                });
+                this.playerNameInput.addEventListener('input', () => this.validateInput());
+                this.startGameBtn.addEventListener('click', () => this.startGame());
+                this.backToSetupBtn.addEventListener('click', () => this.backToSetup());
+
+                this.updateUI();
+            }
+
+            validateInput() {
+                const name = this.playerNameInput.value.trim();
+                const isValid = name.length > 0 && !this.players.includes(name) && this.players.length < this.maxPlayers;
+                this.addPlayerBtn.disabled = !isValid;
+            }
+
+            addPlayer() {
+                const name = this.playerNameInput.value.trim();
+                
+                if (!name) {
+                    alert('Please enter a player name');
+                    return;
+                }
+
+                if (this.players.includes(name)) {
+                    alert('Player name already exists');
+                    return;
+                }
+
+                if (this.players.length >= this.maxPlayers) {
+                    alert(`Maximum ${this.maxPlayers} players allowed`);
+                    return;
+                }
+
+                this.players.push(name);
+                this.playerNameInput.value = '';
+                this.updateUI();
+                this.playerNameInput.focus();
+            }
+
+            removePlayer(name) {
+                const index = this.players.indexOf(name);
+                if (index > -1) {
+                    this.players.splice(index, 1);
+                    this.updateUI();
+                }
+            }
+
+            updateUI() {
+                this.updatePlayerList();
+                this.updatePlayerCount();
+                this.validateInput();
+                this.updateStartButton();
+            }
+
+            updatePlayerList() {
+                if (this.players.length === 0) {
+                    this.emptyState.style.display = 'block';
+                    return;
+                }
+
+                this.emptyState.style.display = 'none';
+                
+                // Clear existing player items (but keep empty state)
+                const existingItems = this.playerList.querySelectorAll('.player-item');
+                existingItems.forEach(item => item.remove());
+
+                // Add player items
+                this.players.forEach(name => {
+                    const playerItem = document.createElement('div');
+                    playerItem.className = 'player-item';
+                    playerItem.setAttribute('data-player', name);
+                    
+                    playerItem.innerHTML = `
+                        <span class="player-name">${name}</span>
+                        <button class="remove-btn" data-action="remove-player" data-player-name="${name}">
+                            Remove
+                        </button>
+                    `;
+                    
+                    // Add remove functionality
+                    const removeBtn = playerItem.querySelector('.remove-btn');
+                    removeBtn.addEventListener('click', () => this.removePlayer(name));
+                    
+                    this.playerList.appendChild(playerItem);
+                });
+            }
+
+            updatePlayerCount() {
+                this.playerCount.textContent = `${this.players.length}/${this.maxPlayers} players`;
+            }
+
+            updateStartButton() {
+                this.startGameBtn.disabled = this.players.length === 0;
+            }
+
+            startGame() {
+                if (this.players.length === 0) {
+                    alert('Add at least one player to start the game');
+                    return;
+                }
+                
+                this.playerSetup.style.display = 'none';
+                this.gameArea.style.display = 'block';
+            }
+
+            backToSetup() {
+                this.playerSetup.style.display = 'block';
+                this.gameArea.style.display = 'none';
             }
         }
-        
-        addPlayerBtn.addEventListener('click', addPlayer);
-        playerNameInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                addPlayer();
-            }
+
+        // Initialize the player manager when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new PlayerManager();
         });
-        startGameBtn.addEventListener('click', startGame);
-        
-        // Initialize
-        updatePlayerCount();
     </script>
 </body>
 </html>
