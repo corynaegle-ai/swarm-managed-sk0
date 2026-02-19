@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Player Setup Tests</title>
+</head>
+<body>
+    <div id="test-results"></div>
+    
+    <script>
+        // Basic test framework
+        function runTests() {
+            const results = [];
+            
+            // Test 1: Check if player setup form exists
+            const setupForm = document.getElementById('player-setup');
+            results.push({
+                test: 'Player setup form exists',
+                passed: setupForm !== null
+            });
+            
+            // Test 2: Check if player name input exists
+            const nameInput = document.getElementById('player-name-input');
+            results.push({
+                test: 'Player name input exists',
+                passed: nameInput !== null && nameInput.type === 'text'
+            });
+            
+            // Test 3: Check if Add Player button exists
+            const addBtn = document.getElementById('add-player-btn');
+            results.push({
+                test: 'Add Player button exists',
+                passed: addBtn !== null && addBtn.textContent.includes('Add Player')
+            });
+            
+            // Test 4: Check if player list container exists
+            const playerList = document.getElementById('player-list');
+            results.push({
+                test: 'Player list container exists',
+                passed: playerList !== null
+            });
+            
+            // Test 5: Check if player count display exists
+            const playerCount = document.getElementById('player-count');
+            results.push({
+                test: 'Player count display exists',
+                passed: playerCount !== null && playerCount.textContent.includes('players')
+            });
+            
+            // Test 6: Check if Start Game button exists
+            const startBtn = document.getElementById('start-game-btn');
+            results.push({
+                test: 'Start Game button exists',
+                passed: startBtn !== null && startBtn.textContent.includes('Start Game')
+            });
+            
+            // Test 7: Check if game area exists and is hidden
+            const gameArea = document.getElementById('game-area');
+            const isHidden = gameArea && (gameArea.style.display === 'none' || getComputedStyle(gameArea).display === 'none');
+            results.push({
+                test: 'Game area exists and is initially hidden',
+                passed: gameArea !== null && isHidden
+            });
+            
+            // Display results
+            const resultsDiv = document.getElementById('test-results');
+            resultsDiv.innerHTML = results.map(r => 
+                `<div style="color: ${r.passed ? 'green' : 'red'}">
+                    ${r.passed ? '✓' : '✗'} ${r.test}
+                </div>`
+            ).join('');
+        }
+        
+        // Load the main HTML file and run tests
+        fetch('../index.html')
+            .then(response => response.text())
+            .then(html => {
+                document.body.innerHTML = html + document.body.innerHTML;
+                runTests();
+            })
+            .catch(() => {
+                document.getElementById('test-results').innerHTML = 
+                    '<div style="color: red">✗ Failed to load index.html for testing</div>';
+            });
+    </script>
+</body>
+</html>
