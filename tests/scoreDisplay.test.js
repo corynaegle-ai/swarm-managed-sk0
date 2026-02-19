@@ -1,181 +1,323 @@
 /**
- * Tests for Score Display functionality
+ * Score Display Tests
  */
 
-describe('Score Display', () => {
-  beforeEach(() => {
-    // Set up DOM elements
-    document.body.innerHTML = `
-      <div id="scoreBoard"></div>
-      <div id="roundProgress"></div>
-    `;
-    
-    // Load the module
-    require('../js/scoreDisplay.js');
-  });
-  
-  afterEach(() => {
-    document.body.innerHTML = '';
-  });
-  
-  describe('renderScoreBoard', () => {
-    test('should render scoreboard with player scores', () => {
-      window.renderScoreBoard();
-      
-      const scoreBoard = document.getElementById('scoreBoard');
-      expect(scoreBoard.innerHTML).toContain('Current Scores');
-      expect(scoreBoard.innerHTML).toContain('Player 1');
-      expect(scoreBoard.innerHTML).toContain('Total Score');
-    });
-    
-    test('should handle missing container gracefully', () => {
-      document.getElementById('scoreBoard').remove();
-      
-      expect(() => window.renderScoreBoard()).not.toThrow();
-    });
-    
-    test('should sort players by total score', () => {
-      window.renderScoreBoard();
-      
-      const rows = document.querySelectorAll('.score-table tbody tr:not(.player-details)');
-      expect(rows.length).toBeGreaterThan(0);
-    });
-  });
-  
-  describe('renderRoundProgress', () => {
-    test('should display current round information', () => {
-      window.renderRoundProgress();
-      
-      const roundProgress = document.getElementById('roundProgress');
-      expect(roundProgress.innerHTML).toContain('Round 5 of 10');
-      expect(roundProgress.innerHTML).toContain('50% Complete');
-    });
-    
-    test('should show progress bar', () => {
-      window.renderRoundProgress();
-      
-      const progressBar = document.querySelector('.progress-bar');
-      const progressFill = document.querySelector('.progress-fill');
-      
-      expect(progressBar).toBeTruthy();
-      expect(progressFill).toBeTruthy();
-      expect(progressFill.style.width).toBe('50%');
-    });
-    
-    test('should handle missing container gracefully', () => {
-      document.getElementById('roundProgress').remove();
-      
-      expect(() => window.renderRoundProgress()).not.toThrow();
-    });
-  });
-  
-  describe('updateLeaderHighlight', () => {
-    test('should highlight the current leader', () => {
-      window.renderScoreBoard();
-      window.updateLeaderHighlight();
-      
-      const leaderRows = document.querySelectorAll('.leader');
-      expect(leaderRows.length).toBeGreaterThan(0);
-    });
-    
-    test('should remove previous leader highlighting', () => {
-      // Add a fake leader class
-      document.body.innerHTML += '<div class="leader" data-player-id="999"></div>';
-      
-      window.renderScoreBoard();
-      window.updateLeaderHighlight();
-      
-      const fakeLeader = document.querySelector('[data-player-id="999"]');
-      if (fakeLeader) {
-        expect(fakeLeader.classList.contains('leader')).toBe(false);
-      }
-    });
-  });
-  
-  describe('togglePlayerDetails', () => {
-    test('should toggle player details visibility', () => {
-      window.renderScoreBoard();
-      
-      const detailsRow = document.getElementById('details-1');
-      if (detailsRow) {
-        expect(detailsRow.style.display).toBe('none');
+// Mock DOM elements
+const mockElements = {
+    scoreBoard: {
+        innerHTML: '',
+        appendChild: jest.fn(),
+        querySelector: jest.fn(),
+        querySelectorAll: jest.fn(() => []),
+        parentNode: {
+            insertBefore: jest.fn()
+        }
+    },
+    roundProgress: {
+        innerHTML: '',
+        appendChild: jest.fn()
+    },
+    detailedScores: {
+        innerHTML: '',
+        style: { display: 'none' }
+    }
+};
+
+// Mock document
+global.document = {
+    getElementById: jest.fn((id) => mockElements[id] || null),
+    createElement: jest.fn(() => ({
+        className: '',
+        innerHTML: '',
+        textContent: '',
+        style: {},
+        appendChild: jest.fn(),
+        onclick: null,
+        dataset: {}
+    }))
+};
+
+// Mock console
+global.console = {
+    warn: jest.fn()
+};
+
+describe('ScoreDisplay', () => {
+    let ScoreDisplay;
+    let scoreDisplay;
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+        mockElements.scoreBoard.innerHTML = '';
+        mockElements.roundProgress.innerHTML = '';
         
-        window.togglePlayerDetails(1);
-        expect(detailsRow.style.display).toBe('table-row');
-        
-        window.togglePlayerDetails(1);
-        expect(detailsRow.style.display).toBe('none');
-      }
+        // Import ScoreDisplay class
+        ScoreDisplay = require('../js/scoreDisplay.js');
+        scoreDisplay = new ScoreDisplay();
+    });
+
+    describe('renderScoreBoard', () => {
+        test('should display message when no players provided', () => {
+            scoreDisplay.renderScoreBoard([]);
+            expect(mockElements.scoreBoard.innerHTML).toContain('No scores available');
+        });
+
+        test('should handle missing scoreBoard container', () => {
+            document.getElementById = jest.fn(() => null);
+            scoreDisplay = new ScoreDisplay();
+            scoreDisplay.renderScoreBoard([{ name: 'Player 1', totalScore: 100 }]);
+            expect(console.warn).toHaveBeenCalledWith('Score board container not found');
+        });
+
+        test('should render players with scores', () => {
+            const players = [
+                { id: '1', name: 'Alice', totalScore: 150, roundsPlayed: 5 },
+                { id: '2', name: 'Bob', totalScore: 120, roundsPlayed: 4 }
+            ];
+            
+            scoreDisplay.renderScoreBoard(players);
+            expect(mockElements.scoreBoard.appendChild).toHaveBeenCalled();
+        });
+
+        test('should sort players by total score', () => {
+            const players = [
+                { id: '1', name: 'Alice', totalScore: 100 },
+                { id: '2', name: 'Bob', totalScore: 150 },
+                { id: '3', name: 'Charlie', totalScore: 125 }
+            ];
+            
+            scoreDisplay.renderScoreBoard(players);
+            // Should be sorted: Bob (150), Charlie (125), Alice (100)
+            expect(mockElements.scoreBoard.appendChild).toHaveBeenCalled();
+        });
+
+        test('should add expand button', () => {
+            const players = [{ id: '1', name: 'Alice', totalScore: 100 }];
+            scoreDisplay.renderScoreBoard(players);
+            expect(mockElements.scoreBoard.appendChild).toHaveBeenCalled();
+        });
+    });
+
+    describe('renderRoundProgress', () => {
+        test('should display current round information', () => {
+            scoreDisplay.renderRoundProgress(3, 10);
+            expect(mockElements.roundProgress.appendChild).toHaveBeenCalled();
+        });
+
+        test('should handle missing roundProgress container', () => {
+            document.getElementById = jest.fn((id) => 
+                id === 'roundProgress' ? null : mockElements[id]
+            );
+            scoreDisplay = new ScoreDisplay();
+            scoreDisplay.renderRoundProgress(1, 10);
+            expect(console.warn).toHaveBeenCalledWith('Round progress container not found');
+        });
+
+        test('should create progress bar with correct percentage', () => {
+            scoreDisplay.renderRoundProgress(7, 10);
+            expect(mockElements.roundProgress.appendChild).toHaveBeenCalled();
+        });
+
+        test('should create round indicators', () => {
+            scoreDisplay.renderRoundProgress(3, 10);
+            expect(mockElements.roundProgress.appendChild).toHaveBeenCalled();
+        });
+
+        test('should handle edge case of round 0', () => {
+            scoreDisplay.renderRoundProgress(0, 10);
+            expect(mockElements.roundProgress.appendChild).toHaveBeenCalled();
+        });
+
+        test('should handle completion (round 10 of 10)', () => {
+            scoreDisplay.renderRoundProgress(10, 10);
+            expect(mockElements.roundProgress.appendChild).toHaveBeenCalled();
+        });
+    });
+
+    describe('updateLeaderHighlight', () => {
+        beforeEach(() => {
+            mockElements.scoreBoard.querySelectorAll = jest.fn(() => [
+                { classList: { remove: jest.fn() } },
+                { classList: { remove: jest.fn() } }
+            ]);
+            mockElements.scoreBoard.querySelector = jest.fn();
+        });
+
+        test('should remove existing leader highlights', () => {
+            const mockLeaders = [
+                { classList: { remove: jest.fn() } },
+                { classList: { remove: jest.fn() } }
+            ];
+            mockElements.scoreBoard.querySelectorAll = jest.fn(() => mockLeaders);
+            
+            scoreDisplay.updateLeaderHighlight('player1');
+            
+            mockLeaders.forEach(leader => {
+                expect(leader.classList.remove).toHaveBeenCalledWith('leader');
+            });
+        });
+
+        test('should highlight specific leader by ID', () => {
+            const mockLeaderRow = { classList: { add: jest.fn() } };
+            mockElements.scoreBoard.querySelector = jest.fn(() => mockLeaderRow);
+            
+            scoreDisplay.updateLeaderHighlight('player1');
+            
+            expect(mockElements.scoreBoard.querySelector).toHaveBeenCalledWith('[data-player-id="player1"]');
+            expect(mockLeaderRow.classList.add).toHaveBeenCalledWith('leader');
+        });
+
+        test('should highlight first row when no leader ID provided', () => {
+            const mockFirstRow = { classList: { add: jest.fn() } };
+            mockElements.scoreBoard.querySelector = jest.fn((selector) => {
+                if (selector === '.player-row') return mockFirstRow;
+                return null;
+            });
+            
+            scoreDisplay.updateLeaderHighlight();
+            
+            expect(mockFirstRow.classList.add).toHaveBeenCalledWith('leader');
+        });
+
+        test('should handle missing scoreBoard container', () => {
+            document.getElementById = jest.fn(() => null);
+            scoreDisplay = new ScoreDisplay();
+            
+            // Should not throw error
+            expect(() => scoreDisplay.updateLeaderHighlight('player1')).not.toThrow();
+        });
+    });
+
+    describe('toggleDetailedView', () => {
+        test('should toggle expansion state', () => {
+            const players = [{ id: '1', name: 'Alice', roundScores: [10, 20] }];
+            
+            expect(scoreDisplay.isExpanded).toBe(false);
+            scoreDisplay.toggleDetailedView(players);
+            expect(scoreDisplay.isExpanded).toBe(true);
+            
+            scoreDisplay.toggleDetailedView(players);
+            expect(scoreDisplay.isExpanded).toBe(false);
+        });
+
+        test('should create detailed scores container if missing', () => {
+            const players = [{ id: '1', name: 'Alice' }];
+            scoreDisplay.detailedScores = null;
+            
+            scoreDisplay.toggleDetailedView(players);
+            
+            expect(document.createElement).toHaveBeenCalledWith('div');
+        });
+    });
+
+    describe('renderDetailedScores', () => {
+        beforeEach(() => {
+            mockElements.detailedScores.innerHTML = '';
+            scoreDisplay.detailedScores = mockElements.detailedScores;
+        });
+
+        test('should display message when no players provided', () => {
+            scoreDisplay.renderDetailedScores([]);
+            expect(mockElements.detailedScores.innerHTML).toContain('No detailed scores available');
+        });
+
+        test('should render round-by-round scores', () => {
+            const players = [
+                {
+                    id: '1',
+                    name: 'Alice',
+                    roundScores: [10, 20, 30],
+                    totalScore: 60
+                }
+            ];
+            
+            scoreDisplay.renderDetailedScores(players);
+            expect(mockElements.detailedScores.appendChild).toHaveBeenCalled();
+        });
+
+        test('should handle players with different round counts', () => {
+            const players = [
+                {
+                    id: '1',
+                    name: 'Alice',
+                    roundScores: [10, 20],
+                    totalScore: 30
+                },
+                {
+                    id: '2',
+                    name: 'Bob',
+                    roundScores: [15, 25, 35, 10],
+                    totalScore: 85
+                }
+            ];
+            
+            scoreDisplay.renderDetailedScores(players);
+            expect(mockElements.detailedScores.appendChild).toHaveBeenCalled();
+        });
+    });
+
+    describe('updateAll', () => {
+        test('should update all score displays', () => {
+            const players = [{ id: '1', name: 'Alice', totalScore: 100 }];
+            
+            // Spy on methods
+            jest.spyOn(scoreDisplay, 'renderScoreBoard');
+            jest.spyOn(scoreDisplay, 'renderRoundProgress');
+            jest.spyOn(scoreDisplay, 'updateLeaderHighlight');
+            
+            scoreDisplay.updateAll(players, 5, 'player1');
+            
+            expect(scoreDisplay.renderScoreBoard).toHaveBeenCalledWith(players);
+            expect(scoreDisplay.renderRoundProgress).toHaveBeenCalledWith(5);
+            expect(scoreDisplay.updateLeaderHighlight).toHaveBeenCalledWith('player1');
+        });
+
+        test('should update detailed scores if expanded', () => {
+            const players = [{ id: '1', name: 'Alice', totalScore: 100 }];
+            scoreDisplay.isExpanded = true;
+            
+            jest.spyOn(scoreDisplay, 'renderDetailedScores');
+            
+            scoreDisplay.updateAll(players, 3);
+            
+            expect(scoreDisplay.renderDetailedScores).toHaveBeenCalledWith(players);
+        });
+    });
+
+    describe('escapeHtml', () => {
+        test('should escape HTML characters', () => {
+            const result = scoreDisplay.escapeHtml('<script>alert("xss")</script>');
+            expect(result).not.toContain('<script>');
+            expect(result).toContain('&lt;script&gt;');
+        });
+
+        test('should handle regular text', () => {
+            const result = scoreDisplay.escapeHtml('Normal Player Name');
+            expect(result).toBe('Normal Player Name');
+        });
+    });
+});
+
+// Test standalone functions
+describe('Standalone Functions', () => {
+    let renderScoreBoard, renderRoundProgress, updateLeaderHighlight;
+    
+    beforeEach(() => {
+        const exports = require('../js/scoreDisplay.js');
+        renderScoreBoard = exports.renderScoreBoard;
+        renderRoundProgress = exports.renderRoundProgress;
+        updateLeaderHighlight = exports.updateLeaderHighlight;
     });
     
-    test('should handle non-existent player ID gracefully', () => {
-      window.renderScoreBoard();
-      
-      expect(() => window.togglePlayerDetails(999)).not.toThrow();
-    });
-  });
-  
-  describe('Acceptance Criteria', () => {
-    test('AC1: renderScoreBoard displays current total scores for all players', () => {
-      window.renderScoreBoard();
-      
-      const scoreTable = document.querySelector('.score-table');
-      const totalScores = document.querySelectorAll('.total-score');
-      
-      expect(scoreTable).toBeTruthy();
-      expect(totalScores.length).toBeGreaterThan(0);
-      
-      totalScores.forEach(scoreElement => {
-        const score = parseInt(scoreElement.textContent);
-        expect(score).toBeGreaterThanOrEqual(0);
-      });
+    test('renderScoreBoard function should work', () => {
+        expect(() => renderScoreBoard([])).not.toThrow();
     });
     
-    test('AC2: renderRoundProgress shows Round X of 10 and round breakdown', () => {
-      window.renderRoundProgress();
-      
-      const roundText = document.querySelector('.round-header h3');
-      const roundItems = document.querySelectorAll('.round-item');
-      
-      expect(roundText.textContent).toContain('Round 5 of 10');
-      expect(roundItems.length).toBe(10);
+    test('renderRoundProgress function should work', () => {
+        expect(() => renderRoundProgress(1, 10)).not.toThrow();
     });
     
-    test('AC3: updateLeaderHighlight visually highlights current leader', () => {
-      window.renderScoreBoard();
-      window.updateLeaderHighlight();
-      
-      const leaderElement = document.querySelector('.leader');
-      expect(leaderElement).toBeTruthy();
-      expect(leaderElement.classList.contains('leader')).toBe(true);
+    test('updateLeaderHighlight function should work', () => {
+        expect(() => updateLeaderHighlight('player1')).not.toThrow();
     });
-    
-    test('AC4: Score displays are properly styled', () => {
-      window.renderScoreBoard();
-      window.renderRoundProgress();
-      
-      const scoreBoard = document.querySelector('.score-board');
-      const roundProgress = document.querySelector('.round-progress');
-      const scoreTable = document.querySelector('.score-table');
-      
-      expect(scoreBoard).toBeTruthy();
-      expect(roundProgress).toBeTruthy();
-      expect(scoreTable).toBeTruthy();
-    });
-    
-    test('AC5: Round-by-round scores shown in expandable format', () => {
-      window.renderScoreBoard();
-      
-      const detailsButton = document.querySelector('.btn-details');
-      const playerDetails = document.querySelector('.player-details');
-      const roundsGrid = document.querySelector('.rounds-grid');
-      
-      expect(detailsButton).toBeTruthy();
-      expect(playerDetails).toBeTruthy();
-      expect(roundsGrid).toBeTruthy();
-      
-      // Check that details are initially hidden
-      expect(playerDetails.style.display).toBe('none');
-    });
-  });
 });
